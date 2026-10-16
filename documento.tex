@@ -42,16 +42,16 @@
 
 % Informação relacionadas ao trabalho
 
-\autor{Nome Completo do Autor}
-\titulo{Título do Trabalho: Subtítulo (se houver)}
-\local{Cidade}
-\data{Ano de Entrega}
+\autor{João Pedro Moreira Campos de Lima\\Isaac da Cunha Cavalcanti Duarte\\Juliano Magalhães Jurity}
+\titulo{Raciocínio Lógico em LLMs: Análise de Processos Dedutivos na Resolução de Sudoku}
+\local{Maracanaú}
+\data{2026}
 
 % Informação sobre a IES
 
 \ies{Instituto Federal de Educação, Ciência e Tecnologia do Ceará}
 \iessigla{IFCE}
-\centro{\textit{Campus} Caucaia}
+\centro{\textit{Campus} Maracanaú}
 
 % Informação para Tese
 
@@ -75,9 +75,9 @@
 
 % Informação para TCC de Graduação
 
-\graduacaoem{Licenciatura em Matemática} 
-\habilitacao{Licenciado} % Licenciado ou Bacharel
-\areadeconcentracaograduacao{Matemática}
+\graduacaoem{Ciência da Computação}
+\habilitacao{Bacharel}
+\areadeconcentracaograduacao{Ciência da Computação}
 
 % Data de Aprovação
 
@@ -93,19 +93,51 @@
 
 % Informação sobre o Orientador
 
-\orientador{Prof. Dr. XXXXX}
+\orientador{Profa. Aurenivia Ferreira da Silva}
 \orientadories{Instituto Federal de Educação, Ciência e Tecnologia do Ceará}
 \orientadoriessigla{IFCE}
 \orientadorcentro{\textit{Campus} Caucaia}
-\orientadorfeminino{nao} % Coloque 'sim' se for do sexo feminino
+\orientadorfeminino{sim} % Coloque 'sim' se for do sexo feminino
 
 % Informação sobre o Coorientador
 
-\coorientador{Profa. Ma. XXXXX} % Deixe o nome do coorientador em branco para remover do documento
+\coorientador{} % Deixe o nome do coorientador em branco para remover do documento
 \coorientadories{Instituto Federal de Educação, Ciência e Tecnologia do Ceará}
 \coorientadoriessigla{IFCE}
 \coorientadorcentro{\textit{Campus} Caucaia}
 \coorientadorfeminino{sim} % Coloque 'sim' se for do sexo feminino
+
+% Folha de rosto adaptada para o trabalho da disciplina.
+\makeatletter
+\renewcommand{\folhaderostocontent}{%
+  \begin{center}
+    \normalsize\MakeUppercase\imprimirautor\par
+    \vspace{2cm}
+    \normalsize\MakeUppercase\imprimirtitulo\par
+  \end{center}
+  \vspace{1.5cm}
+  \hspace*{8cm}%
+  \begin{minipage}{8cm}
+    \begin{SingleSpace}
+      Projeto de Pesquisa apresentado ao Curso de Ciência da Computação do Instituto Federal de Educação, Ciência e Tecnologia do Ceará -- IFCE \textit{Campus} Maracanaú, como requisito parcial para aprovação na disciplina de Metodologia Científica.
+
+      \vspace{\onelineskip}
+      Orientadora: Profa. Ma. Aurenívia Ferreira da Silva.
+    \end{SingleSpace}
+  \end{minipage}
+  \vfill
+  \centering
+  \normalsize\MakeUppercase\imprimirlocal\par
+  \normalsize\MakeUppercase\imprimirdata
+}
+\makeatother
+
+% Seções primárias sem quebra obrigatória de página, conforme o modelo da disciplina.
+\newcommand{\secaoprimariasemquebra}[1]{%
+  \refstepcounter{chapter}%
+  \section*{\thechapter\quad\MakeUppercase{#1}}%
+  \addcontentsline{toc}{chapter}{\thechapter\quad\MakeUppercase{#1}}%
+}
 
 % Informação sobre a banca
 
@@ -141,41 +173,42 @@
 
 \imprimircapa
 \imprimirfolhaderosto{}
-\imprimirfichacatalografica{elementos-pre-textuais/ficha-catalografica}
+%\imprimirfichacatalografica{elementos-pre-textuais/ficha-catalografica}
 %\imprimirerrata{elementos-pre-textuais/errata}
-\imprimirfolhadeaprovacao
-\imprimirdedicatoria{elementos-pre-textuais/dedicatoria}
-\imprimiragradecimentos{elementos-pre-textuais/agradecimentos}
-\imprimirepigrafe{elementos-pre-textuais/epigrafe}
-\imprimirresumo{elementos-pre-textuais/resumo}
-\imprimirabstract{elementos-pre-textuais/abstract}
-\imprimirlistadefiguras
-\imprimirlistadetabelas
+%\imprimirfolhadeaprovacao
+%\imprimirdedicatoria{elementos-pre-textuais/dedicatoria}
+%\imprimiragradecimentos{elementos-pre-textuais/agradecimentos}
+%\imprimirepigrafe{elementos-pre-textuais/epigrafe}
+%\imprimirresumo{elementos-pre-textuais/resumo}
+%\imprimirabstract{elementos-pre-textuais/abstract}
+%\imprimirlistadefiguras
+%\imprimirlistadetabelas
 %\imprimirlistadequadros
 %\imprimirlistadealgoritmos
 %\imprimirlistadecodigosfonte
-\imprimirlistadesiglas{elementos-pre-textuais/lista-de-siglas}
-\imprimirlistadesimbolos{elementos-pre-textuais/lista-de-simbolos}
+%\imprimirlistadesiglas{elementos-pre-textuais/lista-de-siglas}
+%\imprimirlistadesimbolos{elementos-pre-textuais/lista-de-simbolos}
 \imprimirsumario
 	
 % Elementos textuais
 
 \textual
 \input{elementos-textuais/introducao}
-\input{elementos-textuais/fundamentacao-teorica}
+\input{elementos-textuais/objetivos}
 %\input{elementos-textuais/trabalhos-relacionados}
-%\input{elementos-textuais/metodologia}
+\input{elementos-textuais/metodologia}
 %\input{elementos-textuais/resultados}
-\input{elementos-textuais/conclusao}
+%\input{elementos-textuais/conclusao}
 	
 % Elementos pós-textuais
 
+\nocite{dagostino2024,sudokuSage2026,herr2025,maiya2025,mondorf2024}
 \bibliography{elementos-pos-textuais/referencias}
 %\imprimirglossario	
-\imprimirapendices
-\input{elementos-pos-textuais/apendice-a}
-\imprimiranexos
-\input{elementos-pos-textuais/anexo-a}		
+%\imprimirapendices
+%\input{elementos-pos-textuais/apendice-a}
+%\imprimiranexos
+%\input{elementos-pos-textuais/anexo-a}
 %\imprimirindice
 
 \end{document}

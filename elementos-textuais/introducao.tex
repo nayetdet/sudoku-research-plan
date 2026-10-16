@@ -1,7 +1,33 @@
 \chapter{Introdução}
 
-Tem como finalidade explicar para o leitor do que trata a pesquisa, apresentando, de maneira sucinta, o tema do trabalho e sua delimitação, a problematização, os objetivos, a justificativa, as hipóteses e variáveis \cite{andrade,koche,medeiros}.
+\section{Delimitação do tema}
 
-Pode-se, também, indicar os principais teóricos que fundamentaram a pesquisa e descrever brevemente os assuntos abordados nas demais seções do trabalho \cite{medeiros}.
+Esta pesquisa terá como tema o raciocínio lógico em Modelos de Linguagem de Grande Escala (LLMs), tendo como recorte a resolução de jogadas individuais em tabuleiros de Sudoku 4 $\times$ 4 e 9 $\times$ 9. O Sudoku é um quebra-cabeça de preenchimento: algumas casas já começam com números e as demais devem ser completadas. Em um Sudoku 4 $\times$ 4, cada linha, coluna e bloco de 2 $\times$ 2 deve conter os números de 1 a 4, sem repeti-los. Em um Sudoku 9 $\times$ 9, a mesma regra vale para os números de 1 a 9 e para blocos de 3 $\times$ 3. Portanto, um número só poderá ser inserido em uma casa vazia se ele não aparecer na linha, na coluna nem no bloco dessa casa.
 
-O texto deve ser justificado, digitado em fonte \textit{Times New Roman} ou Arial, tamanho 12 e espaçamento de 1,5 entre as linhas, com exceção das citações com mais de três linhas, notas de rodapé e paginação, que devem ser em fonte tamanho 10 e espaçamento simples (1,0).
+Antes de fazer uma jogada, serão identificados os candidatos de cada casa vazia. Candidatos são os números que ainda poderiam ser colocados naquela casa sem quebrar nenhuma regra. A pesquisa examinará três técnicas que usam esses candidatos: \textit{Naked Single}, \textit{Hidden Single} e consenso.
+
+O \textit{Naked Single} parte de uma casa. Ele ocorre quando, depois de eliminar os números que já aparecem na linha, na coluna e no bloco, resta somente um candidato para aquela casa. Por exemplo, em um Sudoku 9 $\times$ 9, se uma casa não puder receber os números 1, 2, 3, 4, 5, 6, 8 e 9, ela necessariamente receberá o número 7.
+
+O \textit{Hidden Single} parte de um número dentro de uma linha, coluna ou bloco. Uma casa pode ainda ter mais de um candidato, mas certo número pode ter apenas uma posição possível naquela unidade. Por exemplo, se o número 5 puder aparecer em apenas uma das casas vazias de uma linha, essa casa deverá receber o 5. A diferença principal é que o \textit{Naked Single} encontra um único número para uma casa, enquanto o \textit{Hidden Single} encontra uma única casa para um número.
+
+O consenso será usado quando nenhuma dessas deduções diretas resolver a jogada. Nesse caso, serão consideradas hipóteses temporárias. Suponha que um número possa ocupar duas posições diferentes; será analisado o que acontece em cada possibilidade, usando apenas deduções por \textit{Naked Single} e \textit{Hidden Single}. Se todas as possibilidades que continuam válidas levarem ao mesmo número em uma casa, essa conclusão poderá ser aceita no tabuleiro original. Assim, o consenso não escolhe uma hipótese de imediato: ele identifica uma conclusão que se mantém em todos os caminhos possíveis.
+
+Portanto, a pesquisa não buscará apenas verificar se a LLM informa um número correto. Ela avaliará se o modelo consegue indicar uma próxima jogada válida e explicar se chegou a essa resposta por \textit{Naked Single}, \textit{Hidden Single}, consenso ou outra estratégia. O foco ficará restrito a essas jogadas e técnicas iniciais, sem a pretensão de analisar todas as técnicas existentes nem a resolução completa de qualquer tabuleiro de Sudoku.
+
+\section{Problematização}
+
+A ideia desta pesquisa surgiu do interesse em compreender como os Modelos de Linguagem de Grande Escala (LLMs) lidam com tarefas que exigem raciocínio lógico. Embora esses modelos apresentem bons resultados em diferentes tipos de problemas, ainda existe dificuldade em determinar se suas respostas são resultado de um processo de raciocínio consistente ou apenas da geração de respostas plausíveis. Essa dúvida se torna mais importante quando o problema não pode ser resolvido por uma dedução imediata e exige considerar hipóteses, acompanhar suas consequências e descartar caminhos inválidos.
+
+O Sudoku foi escolhido por possuir regras bem definidas e permitir a análise de diferentes níveis de dedução em um ambiente controlado. As técnicas de \textit{Naked Single} e \textit{Hidden Single} permitem observar situações em que a jogada é obtida diretamente a partir das regras do tabuleiro. Já o consenso exige um passo adicional: o modelo deve analisar hipóteses temporárias e verificar se todas as possibilidades viáveis levam à mesma conclusão. Por exigir essa comparação entre caminhos possíveis, o consenso permitirá avaliar o desempenho das LLMs em um raciocínio mais encadeado e profundo do que o necessário nas deduções diretas.
+
+Dessa forma, a pesquisa buscará observar não apenas se a LLM chega à resposta correta, mas também se sua resposta e sua justificativa são compatíveis com a técnica exigida pela instância. As justificativas serão analisadas como respostas fornecidas pelo modelo para a tarefa, sem serem consideradas uma demonstração direta de seu funcionamento interno. Assim, este projeto apresenta a seguinte questão norteadora: como os Modelos de Linguagem de Grande Escala realizam processos de raciocínio lógico durante a resolução de problemas de Sudoku que exigem deduções diretas e raciocínio por hipóteses?
+
+\section{Hipótese}
+
+Acredita-se que as LLMs apresentem desempenho satisfatório nas instâncias resolvidas por \textit{Naked Single} e \textit{Hidden Single}, pois essas técnicas dependem da identificação direta de candidatos. Espera-se, porém, que os modelos encontrem maior dificuldade nas instâncias de consenso, pois elas exigem formular hipóteses, acompanhar suas consequências e reconhecer uma conclusão comum entre diferentes possibilidades. Assim, prevê-se uma redução na taxa de acerto e na qualidade das justificativas à medida que a resolução exige raciocínios mais complexos e encadeados.
+
+\section{Justificativa}
+
+Este estudo é relevante por contribuir para uma melhor compreensão das capacidades e limitações das LLMs em tarefas que exigem raciocínio lógico. A utilização do Sudoku permite comparar, em um ambiente controlado, o desempenho dos modelos em deduções diretas e em situações que exigem raciocínio por hipóteses. Essa comparação poderá oferecer critérios mais precisos para avaliar se uma resposta correta é acompanhada por uma justificativa compatível com as regras do problema.
+
+Os resultados poderão favorecer estudantes e docentes que utilizam jogos de lógica como apoio ao desenvolvimento do raciocínio, pois uma ferramenta otimizada poderá apresentar passos de resolução mais claros e adequados ao nível de dificuldade do usuário. Também poderão auxiliar pesquisadores e profissionais que desenvolvem sistemas baseados em LLMs, oferecendo critérios para diferenciar respostas corretas, respostas apenas plausíveis e erros de dedução, especialmente em tarefas que exigem analisar alternativas. Dessa forma, o estudo poderá contribuir para o aperfeiçoamento de recursos educacionais e de ferramentas digitais que utilizem explicações lógicas de maneira mais confiável.

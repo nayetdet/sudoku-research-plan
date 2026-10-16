@@ -33,7 +33,7 @@ compile:
 	@echo "*********************************************************"
 	@echo "Compilando..."
 	pdflatex $(filename).tex
-	bibtex $(filename)
+	@if rg -q '^\\bibliography' $(filename).tex; then bibtex $(filename); fi
 	pdflatex $(filename).tex
 	pdflatex $(filename).tex
 	@echo "Processo finalizado com sucesso!"
@@ -42,5 +42,4 @@ compile:
 clean:
 	@echo -n "Limpando arquivos auxiliares...\n"
 	@rm -f *.out *.aux *.alg *.acr *.dvi *.gls *.log *.bbl *.blg *.ntn *.not *.lof *.loq *.lot *.toc *.loa *.lsg *.nlo *.nls *.ilg *.ind *.ist *.glg *.glo *.xdy *.acn *.idx *.loq
-	@rm -f $(filename).pdf
 	@echo "Processo finalizado com sucesso!"

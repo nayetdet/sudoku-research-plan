@@ -1,0 +1,27 @@
+\chapter{Metodologia}
+
+Esta pesquisa será de natureza aplicada, com abordagem experimental e computacional. O experimento será realizado por meio do sistema desenvolvido no projeto \textit{Sudoku LLM Reasoning}, que gerará instâncias de Sudoku, identificará as técnicas de dedução disponíveis e submeterá as grades a uma LLM configurada no sistema. Serão utilizados tabuleiros 4 $\times$ 4 e 9 $\times$ 9, permitindo observar o desempenho do modelo em duas dimensões do mesmo problema.
+
+\section{Geração e classificação das instâncias}
+
+Inicialmente, o sistema criará uma grade completa e válida para cada dimensão de Sudoku. Para isso, as casas do tabuleiro serão representadas como variáveis numéricas e um solucionador de restrições verificará as regras de linhas, colunas e blocos. A partir de uma solução válida, o programa removerá números de posições escolhidas aleatoriamente, formando gradualmente um novo tabuleiro com casas vazias.
+
+Em cada etapa de remoção, o programa calculará os candidatos possíveis para todas as casas vazias e verificará se a grade pertence a uma das três categorias da pesquisa. Uma instância será classificada como \textit{Naked Single} quando existir uma casa com apenas um candidato possível. Será classificada como \textit{Hidden Single} quando determinado número só puder ocupar uma casa em uma linha, coluna ou bloco. Para formar uma instância de consenso, o sistema rejeitará as grades que ainda tenham \textit{Naked Singles} ou \textit{Hidden Singles} e procurará uma dedução obtida por hipóteses de primeira camada.
+
+No consenso, o programa escolherá um número candidato e testará temporariamente as posições possíveis desse número em uma mesma linha, coluna ou bloco. Em cada hipótese, serão aplicadas apenas as deduções por \textit{Naked Single} e \textit{Hidden Single}. Se todas as hipóteses viáveis levarem ao mesmo valor em uma casa alvo, essa jogada será classificada como consenso. As hipóteses serão usadas somente durante a análise; o tabuleiro original não será alterado por elas.
+
+O processo de geração será repetido várias vezes para cada dimensão e categoria. As tentativas serão executadas em paralelo e interrompidas quando for atingida a quantidade de grades definida para o experimento. As grades aceitas serão armazenadas com sua dimensão, categoria e posição das casas vazias, formando o conjunto de instâncias que será apresentado ao modelo.
+
+\section{Aplicação da LLM e registro das respostas}
+
+Para cada instância armazenada, o sistema enviará à LLM a grade em formato textual, usando o valor zero para indicar casas vazias. O comando informará a dimensão do tabuleiro, a técnica que deve ser procurada e as regras que definem \textit{Naked Single}, \textit{Hidden Single} e consenso. A resposta solicitada deverá conter apenas uma jogada, formada pelo valor escolhido, pela posição da casa em índices de linha e coluna iniciados em zero, pela técnica empregada e por uma explicação textual.
+
+As respostas serão registradas junto com o identificador do tabuleiro, a dimensão, a técnica solicitada e a explicação fornecida. O mesmo procedimento poderá ser executado novamente com diferentes configurações de modelo, mantendo-se as mesmas grades e os mesmos comandos para permitir a comparação dos resultados.
+
+\section{Validação e análise dos resultados}
+
+A validação será feita automaticamente pelo próprio sistema. Primeiro, a jogada indicada pela LLM será comparada com os candidatos previamente calculados para a técnica solicitada. Quando houver correspondência, a resposta será classificada como prevista. Quando não houver correspondência direta, o programa verificará se a jogada ainda é compatível com pelo menos uma solução válida do tabuleiro.
+
+As respostas que forem válidas, mas não coincidirem com o candidato previsto para a técnica, serão separadas em dois grupos: jogadas válidas e forçadas pela solução do tabuleiro, classificadas como além do previsto; e jogadas válidas, mas que ainda permitem mais de uma possibilidade, classificadas como além do previsto não únicas. Uma resposta incompatível com qualquer solução válida será classificada como alucinação. Caso a LLM não apresente uma jogada, o registro será classificado como não encontrado.
+
+Ao final, serão contabilizadas as respostas previstas, além do previsto, além do previsto não únicas, alucinações e respostas não encontradas para cada técnica e dimensão de tabuleiro. Esses resultados serão comparados para verificar se o desempenho da LLM se mantém nas deduções diretas ou se diminui quando a instância exige o consenso, que envolve hipóteses e encadeamento de deduções.
