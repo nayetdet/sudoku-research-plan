@@ -12,6 +12,7 @@
 *.synctex.gz
 *.toc
 *.xdv
+*.tmp
 /documento.pdf
 
 *.acn
