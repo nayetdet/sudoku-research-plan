@@ -136,7 +136,7 @@
 \newcommand{\secaoprimariasemquebra}[1]{%
   \refstepcounter{chapter}%
   \section*{\thechapter\quad\MakeUppercase{#1}}%
-  \addcontentsline{toc}{chapter}{\thechapter\quad\MakeUppercase{#1}}%
+  \addcontentsline{toc}{chapter}{\protect\chapternumberline{\thechapter}\MakeTextUppercase{#1}}%
 }
 
 % Informação sobre a banca
@@ -196,8 +196,9 @@
 \setcounter{page}{3}
 \input{elementos-textuais/introducao}
 \input{elementos-textuais/objetivos}
-%\input{elementos-textuais/trabalhos-relacionados}
+\input{elementos-textuais/referencial-teorico}
 \input{elementos-textuais/metodologia}
+\input{elementos-textuais/cronograma}
 %\input{elementos-textuais/resultados}
 %\input{elementos-textuais/conclusao}
 	
