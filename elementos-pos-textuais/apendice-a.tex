@@ -1,39 +1,19 @@
-\apendice{Exemplo de Apêndice}
+\apendice{Formalização complementar das soluções do Sudoku}
 
-\begin{quadro}[!ht]	
-\centering
-\Caption{\label{qua:exemplo-2} Normas técnicas vigentes sobre normalização de trabalhos acadêmicos do ABNT/CB - 014}
-\IFCEqua{}{
-\begin{tabular}{|c|c|}
-\hline
-\textbf{Número} & \textbf{Título} \\
-\hline
-6022:2018 & Artigo em publicação periódica técnica e/ou científica - Apresentação \\
-\hline
-6023:2002 & Referências - Elaboração \\
-\hline
-6024:2012 & Numeração progressiva das seções de um documento - Apresentação \\
-\hline
-6027:2012 & Sumário - Apresentação \\
-\hline
-6028:2003 & Resumo - Apresentação \\
-\hline
-6034:2004 & Índice - Apresentação \\
-\hline
-10520:2002 & Citações em documentos - Apresentação \\
-\hline
-10719:2015 & Relatório técnico e/ou científico - Apresentação \\
-\hline
-12225:2004 & Lombada - Apresentação \\
-\hline
-14724:2011 & Trabalhos acadêmicos - Apresentação \\
-\hline
-15287:2011 & Projeto de pesquisa - Apresentação \\
-\hline
-15437:2006 & Pôsteres técnicos e científicos - Apresentação \\
-\hline
-\end{tabular}
-}{
-\Fonte{elaborado pelo autor, de acordo com o Catálogo da ABNT.}
-}
-\end{quadro}
+Este apêndice reúne a parte mais abstrata da formalização do Z3. Ela detalha a ideia apresentada na metodologia: o programa enumera soluções completas para descobrir quais valores continuam possíveis em cada célula.
+
+Seja $\Phi_G$ o conjunto de restrições de uma grade $G$. Uma solução completa é uma atribuição $M$ de valores às células que satisfaz todas essas restrições. O conjunto de soluções é:
+
+\[
+\operatorname{Sol}(G)=\{M : M\models\Phi_G\}.
+\]
+
+Nessa expressão, $M\models\Phi_G$ significa que o preenchimento $M$ respeita as regras da grade, as pistas e as restrições de linha, coluna e bloco.
+
+Para uma célula localizada na posição $[i,j]$, os valores que aparecem entre todas as soluções completas são definidos por:
+
+\[
+\operatorname{Poss}_G(i,j)=\{M(x_{ij}) : M\in\operatorname{Sol}(G)\}.
+\]
+
+Se $\left|\operatorname{Poss}_G(i,j)\right|=1$, apenas um valor aparece naquela posição e a célula é globalmente forçada pela grade. Se $\left|\operatorname{Poss}_G(i,j)\right|>1$, mais de um valor pode ocupar a posição em soluções diferentes. O código usa essa distinção ao avaliar se a jogada proposta pela LLM é apenas compatível com alguma solução ou se é única naquela célula.

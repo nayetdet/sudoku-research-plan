@@ -1,29 +1,69 @@
 \secaoprimariasemquebra{Referencial teórico}
 
-Este referencial discute estudos sobre o raciocínio lógico em Modelos de Linguagem de Grande Escala (LLMs) e sobre o uso de problemas estruturados para avaliá-lo. O ponto de partida é que acertar a resposta não basta para mostrar como o modelo chegou a ela. Para examinar também esse processo, a pesquisa utiliza o Sudoku, cujas regras permitem conferir cada jogada e comparar a explicação apresentada com a técnica adequada ao caso.
+Esta seção apresenta as ideias usadas para construir e avaliar o experimento. Primeiro, explica por que uma resposta correta não é suficiente para avaliar uma LLM. Depois, mostra como o Sudoku permite conferir cada passo da resolução e apresenta as três técnicas usadas na pesquisa.
 
-\section{Raciocínio lógico e limites das LLMs}
+\section{Raciocínio lógico e respostas de LLMs}
 
-Raciocinar é chegar a conclusões a partir das informações disponíveis e das regras de um problema. Esse processo, no entanto, tem custos: não é possível examinar todas as consequências de cada informação sem empregar tempo e recursos. \citeonline{dagostino2024} chamam esse esforço cognitivo e computacional de custo do raciocínio. O conceito ajuda a diferenciar, nesta pesquisa, as deduções que decorrem diretamente das restrições do tabuleiro daquelas que exigem considerar hipóteses alternativas.
+Neste trabalho, raciocinar significa usar informações e regras para chegar a uma conclusão. Para fazer isso, é preciso observar o que já se sabe, comparar possibilidades e descartar aquelas que entram em conflito com as regras. \citeonline{dagostino2024} discutem como esse processo pode ser limitado pelos recursos disponíveis para quem raciocina.
 
-Em tarefas desse tipo, uma LLM pode dar uma resposta convincente sem que a justificativa corresponda a um raciocínio válido. Essa dificuldade aparece no benchmark TruthQuest, analisado por \citeonline{mondorf2024}, que reúne problemas baseados em suposições. Os autores observaram que os modelos têm dificuldade para acompanhar cenários hipotéticos e deduzir corretamente as consequências de premissas que podem ser falsas. Avaliar apenas o resultado final, portanto, pode esconder falhas importantes na explicação.
+Uma LLM pode escrever uma explicação clara e, ainda assim, apresentar uma conclusão que não decorre das informações fornecidas. No benchmark TruthQuest, \citeonline{mondorf2024} observaram dificuldades dos modelos ao lidar com hipóteses e com as consequências de premissas possivelmente falsas. Por isso, nesta pesquisa, a explicação será observada junto com a jogada final, e não como uma prova automática de que o modelo raciocinou corretamente.
 
-Outra abordagem consiste em explorar diferentes caminhos possíveis. \citeonline{herr2025} estudam essa estratégia e descrevem um método em que o modelo avalia as ações disponíveis antes de decidir se continua por um caminho ou se examina alternativas. Os resultados em tarefas como Sudoku sugerem que uma busca organizada pode ajudar em problemas mais difíceis, embora dependa das escolhas feitas e dos recursos disponíveis. Nesta pesquisa, o princípio do consenso permite uma exploração mais restrita: são consideradas hipóteses alternativas para verificar se todas conduzem à mesma jogada.
+Alguns problemas exigem explorar caminhos alternativos antes de decidir. \citeonline{herr2025} investigam esse tipo de busca em LLMs e mostram que ela pode ajudar em tarefas estruturadas, como Sudoku. O consenso de primeira camada usa essa ideia de forma limitada: o programa cria hipóteses simples, acompanha suas consequências e só aceita uma conclusão quando ela aparece em todos os caminhos viáveis.
 
-\section{Sudoku como problema de satisfação de restrições}
+\section{Sudoku como problema de restrições}
 
-O Sudoku pode ser tratado como um problema de satisfação de restrições. Em uma grade padrão de 9 $\times$ 9, cada célula recebe um número de 1 a 9, sem repetição em cada linha, coluna ou bloco de 3 $\times$ 3. Resolver o tabuleiro é encontrar valores que respeitem todas essas regras simultaneamente. Isso torna o jogo útil para avaliar jogadas: é possível verificar se um valor proposto respeita as restrições e corresponde a uma solução válida.
+O Sudoku também pode ser visto como um problema de satisfação de restrições. Esse nome descreve problemas em que valores precisam ser escolhidos sem quebrar regras. No Sudoku, cada célula é uma posição que deve receber um número. As pistas já têm valores definidos; as células vazias precisam ser preenchidas. As regras de linha, coluna e bloco limitam quais números podem ser usados.
 
-\citeonline{sudokuSage2026} também usam o Sudoku para avaliar jogadas produzidas por LLMs. Como cada jogada deve respeitar as regras de linha, coluna e bloco, sua correção pode ser verificada objetivamente. O estudo aponta ainda que o desempenho dos modelos varia conforme a quantidade e a distribuição das pistas: com menos números preenchidos, há mais escolhas possíveis e a taxa de acerto tende a cair. Essas características permitem ajustar a dificuldade dos tabuleiros e identificar com clareza quando uma jogada é inválida.
+Em uma grade 9 $\times$ 9, por exemplo, cada linha, cada coluna e cada bloco de 3 $\times$ 3 deve conter os números de 1 a 9 uma única vez. Resolver o tabuleiro significa encontrar valores para as células vazias que respeitem todas essas regras ao mesmo tempo. Essa estrutura é útil para a pesquisa porque permite verificar se uma jogada é válida sem depender de opinião humana.
 
-Para encontrar uma jogada sem recorrer a tentativas, primeiro se identificam os candidatos de cada célula vazia. Um candidato é um número que ainda não aparece na linha, na coluna ou no bloco daquela célula. No \textit{Naked Single}, sobra apenas um candidato para a célula, então ele pode ser inserido diretamente. Já no \textit{Hidden Single}, procura-se um número que, embora possa caber em várias células do tabuleiro, só tem uma posição possível em determinada linha, coluna ou bloco. As duas técnicas levam a uma dedução direta, mas uma parte da análise da célula e a outra, da posição possível de um número na unidade.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.72\textwidth]{figuras/sudoku-9x9-medium}
+\Caption{Exemplo de tabuleiro Sudoku 9 $\times$ 9\label{fig:tabuleiro-sudoku}}
+\Fonte{EducColorir (s.d.). Disponível em: \url{https://www.educolorir.com/gerador-de-sudoku}. Acesso em: 21 out. 2026.}
+\end{figure}
 
-Quando essas deduções não bastarem, será utilizado o princípio do consenso. O procedimento consiste em considerar, por um momento, uma possibilidade para uma célula e acompanhar o que decorre dela. Se as hipóteses válidas levarem ao mesmo valor em outra célula, esse valor poderá ser concluído no tabuleiro original. A ideia se aproxima do raciocínio por suposições discutido por \citeonline{mondorf2024}, pois exige comparar cenários antes de chegar a uma conclusão. Aqui, essa análise será usada apenas para justificar uma jogada, sem a pretensão de resolver o tabuleiro inteiro.
+\citeonline{sudokuSage2026} usam o Sudoku para avaliar jogadas individuais propostas por LLMs. A quantidade e a distribuição das pistas alteram a dificuldade do tabuleiro, enquanto as regras permitem conferir a jogada com precisão. Essas duas características tornam o Sudoku adequado para o experimento.
 
-\section{Avaliação de respostas e explicações}
+\subsection{Como as técnicas são identificadas}
 
-A avaliação considera tanto a jogada quanto a explicação apresentada pela LLM. Para ser aceita, a jogada deve indicar corretamente a linha, a coluna e o valor, além de corresponder à técnica prevista para o tabuleiro. O critério parte da abordagem de \citeonline{sudokuSage2026}, que verifica cada movimento em relação a uma solução válida, e acrescenta a identificação da técnica. Assim, será possível distinguir um acerto acompanhado do procedimento esperado de outro obtido por uma dedução diferente.
+Nas Figuras \ref{fig:naked-single}, \ref{fig:hidden-single} e \ref{fig:consenso-sudoku}, L e C significam linha e coluna, com contagem iniciada em 1. Portanto, L2C3 é a célula da segunda linha e da terceira coluna. A expressão $C(\text{L2C3})$ representa os candidatos dessa célula. Uma unidade é uma linha, uma coluna ou um bloco.
 
-Além de indicar a jogada, espera-se que a LLM explique por que ela é válida. Ao avaliar cinco modelos na resolução e na explicação de Sudokus 6 $\times$ 6, \citeonline{maiya2025} observaram que, apesar de algum sucesso na resolução, nenhum deles explicou de forma satisfatória as estratégias empregadas. O estudo também considerou a clareza e o valor educacional das respostas. Seus resultados reforçam que acertar não significa necessariamente explicar bem como se chegou à solução, aspecto que será considerado na análise das justificativas.
+Um candidato é um número que ainda não foi eliminado pelas regras. Ele não é uma resposta confirmada; ele apenas continua possível naquele momento. As três técnicas usadas no estudo partem desse conjunto de possibilidades.
 
-Ao comparar \textit{Naked Single}, \textit{Hidden Single} e o princípio do consenso, a pesquisa poderá observar como as LLMs lidam com diferentes tipos de dedução. As duas primeiras técnicas permitem avaliar o uso de restrições diretamente visíveis no tabuleiro; o consenso exige acompanhar hipóteses e verificar se elas conduzem a uma conclusão comum. Essa análise não permite afirmar como o modelo raciocina internamente, mas mostra se suas respostas e explicações são coerentes com regras e procedimentos lógicos definidos previamente.
+No \textit{Naked Single}, a análise é feita em uma célula: se há um único candidato, esse valor é a jogada. Na Figura \ref{fig:naked-single}, a célula L1C4 está vazia. A linha 1 já contém 2, 4 e 1; a coluna 4 já contém 4, 1 e 2; e o bloco superior direito já contém 1, 2 e 4. Assim, todos os valores, exceto 3, são eliminados. Como $C(\text{L1C4})=\{3\}$, L1C4 recebe 3.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figuras/instancia-1-naked-single}
+\Caption{Instância 1 do conjunto de dados: aplicação de \textit{Naked Single}\label{fig:naked-single}}
+\Fonte{Dados da pesquisa (2026).}
+\end{figure}
+
+No \textit{Hidden Single}, a análise é feita em uma unidade inteira. Na Figura \ref{fig:hidden-single}, a linha 2 tem três células vazias. L2C1 e L2C4 têm candidatos $\{1,3\}$, enquanto L2C2 tem $\{1,3,4\}$. A célula L2C2 não é um \textit{Naked Single}, pois tem três candidatos. Mesmo assim, o número 4 só aparece como possibilidade em L2C2 nessa linha. Como a linha precisa conter o número 4, L2C2 deve receber 4.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figuras/instancia-160-hidden-single}
+\Caption{Instância 160 do conjunto de dados: aplicação de \textit{Hidden Single}\label{fig:hidden-single}}
+\Fonte{Dados da pesquisa (2026).}
+\end{figure}
+
+O consenso é usado quando não há uma dedução direta disponível. O programa escolhe um número que pode ocupar mais de uma posição em uma unidade. Cada posição possível cria uma versão provisória da grade, chamada de ramo. Em cada ramo, o programa aplica apenas \textit{Naked Singles} e \textit{Hidden Singles}. Se todos os ramos que respeitam as regras levam ao mesmo valor em uma célula, essa conclusão pode ser usada no tabuleiro original.
+
+Na Figura \ref{fig:consenso-sudoku}, o número 3 da primeira linha pode ficar em L1C1 ou em L1C4. O primeiro ramo supõe que L1C1 recebe 3; o segundo supõe que L1C4 recebe 3. Depois das deduções diretas, os dois ramos concluem que L1C2 recebe 2. Como o resultado é o mesmo nos dois casos, o programa insere 2 em L1C2 sem precisar escolher qual hipótese inicial é a verdadeira.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/instancia-301-consensus}
+\Caption{Instância 301 do conjunto de dados: aplicação do consenso de primeira camada\label{fig:consenso-sudoku}}
+\Fonte{Dados da pesquisa (2026).}
+\end{figure}
+
+\section{Avaliação das respostas e das explicações}
+
+A avaliação terá duas partes. A primeira é automática: o programa confere se a posição e o valor indicados pela LLM correspondem a uma jogada aceita para a técnica solicitada. A segunda examina se a justificativa apresentada usa as informações necessárias para sustentar a jogada.
+
+Para \textit{Naked Single}, a explicação precisa mostrar por que só resta um candidato na célula. Para \textit{Hidden Single}, ela precisa indicar a linha, coluna ou bloco analisado e mostrar que o valor só cabe em uma posição. Para consenso, precisa apresentar as hipóteses, as deduções feitas em cada ramo e a conclusão comum. \citeonline{maiya2025} mostram que uma solução correta não garante uma explicação que represente adequadamente a estratégia usada.
+
+Ao comparar as três técnicas, a pesquisa verifica se a correção da jogada e a qualidade da explicação mudam quando a tarefa passa de uma dedução direta para uma comparação entre hipóteses. Os resultados mostram se a resposta é compatível com regras e procedimentos definidos previamente; eles não são usados para afirmar, de forma direta, como o modelo funciona internamente.
