@@ -6,7 +6,7 @@ Esta seção apresenta as ideias usadas para construir e avaliar o experimento. 
 
 Neste trabalho, raciocinar significa usar informações e regras para chegar a uma conclusão. Para fazer isso, é preciso observar o que já se sabe, comparar possibilidades e descartar aquelas que entram em conflito com as regras. \citeonline{dagostino2024} discutem como esse processo pode ser limitado pelos recursos disponíveis para quem raciocina.
 
-Uma LLM pode escrever uma explicação clara e, ainda assim, apresentar uma conclusão que não decorre das informações fornecidas. No benchmark TruthQuest, \citeonline{mondorf2024} observaram dificuldades dos modelos ao lidar com hipóteses e com as consequências de premissas possivelmente falsas. Por isso, nesta pesquisa, a explicação será observada junto com a jogada final, e não como uma prova automática de que o modelo raciocinou corretamente.
+Uma LLM pode escrever uma explicação clara e, ainda assim, apresentar uma conclusão que não decorre das informações fornecidas. No benchmark TruthQuest, \citeonline{mondorf2024} observam dificuldades dos modelos ao lidar com hipóteses e com as consequências de premissas possivelmente falsas. Por isso, nesta pesquisa, a explicação será observada junto com a jogada final, e não como uma prova automática de que o modelo raciocinou corretamente.
 
 Alguns problemas exigem explorar caminhos alternativos antes de decidir. \citeonline{herr2025} investigam esse tipo de busca em LLMs e mostram que ela pode ajudar em tarefas estruturadas, como Sudoku. O consenso de primeira camada usa essa ideia de forma limitada: o programa cria hipóteses simples, acompanha suas consequências e só aceita uma conclusão quando ela aparece em todos os caminhos viáveis.
 
@@ -62,7 +62,7 @@ Na Figura \ref{fig:consenso-sudoku}, o número 3 da primeira linha pode ficar em
 
 \section{Avaliação das respostas e das explicações}
 
-A avaliação terá duas partes. A primeira é automática: o programa confere se a posição e o valor indicados pela LLM correspondem a uma jogada aceita para a técnica solicitada. A segunda examina se a justificativa apresentada usa as informações necessárias para sustentar a jogada.
+A avaliação se compõe de duas partes. A primeira é automática: o programa confere se a posição e o valor indicados pela LLM correspondem a uma jogada aceita para a técnica solicitada. A segunda examina se a justificativa apresentada usa as informações necessárias para sustentar a jogada.
 
 Para \textit{Naked Single}, a explicação precisa mostrar por que só resta um candidato na célula. Para \textit{Hidden Single}, ela precisa indicar a linha, coluna ou bloco analisado e mostrar que o valor só cabe em uma posição. Para consenso, precisa apresentar as hipóteses, as deduções feitas em cada ramo e a conclusão comum. \citeonline{maiya2025} mostram que uma solução correta não garante uma explicação que represente adequadamente a estratégia usada.
 

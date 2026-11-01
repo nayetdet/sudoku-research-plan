@@ -1,60 +1,62 @@
 \secaoprimariasemquebra{Metodologia}
 
-Esta pesquisa segue uma sequência simples. Primeiro, o programa cria tabuleiros e identifica a técnica presente em cada um. Depois, uma LLM recebe esses tabuleiros e propõe uma jogada. Por fim, o programa confere a jogada e a explicação. A implementação de referência está disponível em repositório público\footnote{Disponível em: \url{https://github.com/nayetdet/sudoku-llm-reasoning}. Acesso em: 21 out. 2026.}. O banco já existente será tratado como uma base piloto, usada para testar o processo e orientar a etapa comparativa da pesquisa.
+Esta pesquisa seguirá uma sequência simples. Primeiro, o programa criará tabuleiros e identificará a técnica presente em cada um. Depois, uma LLM receberá esses tabuleiros e proporá uma jogada. Por fim, o programa conferirá a jogada e a explicação. O código do experimento será disponibilizado em repositório público\footnote{\url{https://github.com/nayetdet/sudoku-llm-reasoning}.}. Uma base piloto será usada para testar o processo e orientar a etapa comparativa da pesquisa.
 
-O experimento usa Sudokus 4 $\times$ 4 e 9 $\times$ 9. Dentro do programa, uma célula vazia é representada por zero. Os demais números são as pistas do tabuleiro. Por exemplo, a posição que o leitor vê como L1C4 aparece no programa como $[0,3]$: o programa começa a contar linhas e colunas em zero, enquanto o texto começa em 1.
+O experimento usará Sudokus 4 $\times$ 4 e 9 $\times$ 9. Dentro do programa, uma célula vazia será representada por zero. Os demais números serão as pistas do tabuleiro. Por exemplo, a posição que o leitor vê como L1C4 aparecerá no programa como $[0,3]$: o programa começará a contar linhas e colunas a partir de zero, enquanto o texto começará em 1.
 
-\section{Como o programa lê o tabuleiro}
+A seguir, serão apresentadas as etapas a serem seguidas.
 
-O tabuleiro é guardado como uma matriz, isto é, uma lista de linhas. Em um Sudoku 4 $\times$ 4, há quatro linhas, quatro colunas e blocos de 2 $\times$ 2 células. Em um Sudoku 9 $\times$ 9, há nove linhas, nove colunas e blocos de 3 $\times$ 3 células.
+\section{Como o programa lerá o tabuleiro}
 
-Para cada célula vazia, o programa começa com todos os números permitidos. Em seguida, remove os números que já aparecem na linha, na coluna e no bloco da célula. Os números restantes formam o conjunto de candidatos. É a partir desse conjunto que o programa reconhece as técnicas usadas no estudo.
+O tabuleiro será guardado como uma matriz, isto é, uma lista de linhas. Em um Sudoku 4 $\times$ 4, haverá quatro linhas, quatro colunas e blocos de 2 $\times$ 2 células. Em um Sudoku 9 $\times$ 9, haverá nove linhas, nove colunas e blocos de 3 $\times$ 3 células.
 
-Em termos formais, se $x$ é uma célula vazia e $V_n=\{1,2,\ldots,n\}$ é o conjunto de números permitidos, os candidatos são calculados por:
+Para cada célula vazia, o programa começará com todos os números permitidos. Em seguida, removerá os números que aparecerem na linha, na coluna e no bloco da célula. Os números restantes formarão o conjunto de candidatos. A partir desse conjunto, o programa reconhecerá as técnicas que serão usadas no estudo.
+
+Em termos formais, se $x$ for uma célula vazia e $V_n=\{1,2,\ldots,n\}$ for o conjunto de números permitidos, os candidatos serão calculados por:
 
 \[
 \operatorname{Cand}_G(x)=V_n\setminus\bigl(L(x)\cup C(x)\cup B(x)\bigr).
 \]
 
-Na fórmula, $L(x)$ reúne os números presentes na linha de $x$, $C(x)$ os números da coluna e $B(x)$ os números do bloco. O símbolo $\setminus$ significa ``retirar do conjunto''. A fórmula, portanto, diz exatamente o que foi explicado no parágrafo anterior: começar com todos os números e excluir os que já não podem ser usados.
+Na fórmula, $L(x)$ reunirá os números presentes na linha de $x$, $C(x)$ os números da coluna e $B(x)$ os números do bloco. O símbolo $\setminus$ indicará a retirada de elementos de um conjunto. A fórmula, portanto, expressará o procedimento descrito no parágrafo anterior: começar com todos os números e excluir os que não poderão ser usados.
 
-O \textit{Naked Single} aparece quando a célula fica com um único candidato:
+O \textit{Naked Single} será identificado quando a célula ficar com um único candidato:
 
 \[
 \left|\operatorname{Cand}_G(x)\right|=1.
 \]
 
-O \textit{Hidden Single} aparece quando um número $v$ só pode ser colocado em uma célula de uma unidade $U$, sendo $U$ uma linha, coluna ou bloco:
+O \textit{Hidden Single} será identificado quando um número $v$ só puder ser colocado em uma célula de uma unidade $U$, sendo $U$ uma linha, coluna ou bloco:
 
 \[
 \left|\left\{x\in U : v\in\operatorname{Cand}_G(x)\right\}\right|=1.
 \]
 
-Para o consenso de primeira camada, o programa escolhe um número que tem mais de uma posição possível em uma mesma unidade. Cada possibilidade cria um ramo, ou seja, uma cópia temporária do tabuleiro. Dentro de cada ramo, o programa aplica apenas \textit{Naked Singles} e \textit{Hidden Singles}. Se todos os ramos viáveis chegam ao mesmo valor para uma célula alvo, esse valor é aceito no tabuleiro original. Em linguagem lógica, se $D(G_p)(t)=a$ em todos os ramos viáveis $p$, então a célula alvo $t$ recebe $a$:
+Para o consenso de primeira camada, o programa escolherá um número que tenha mais de uma posição possível em uma mesma unidade. Cada possibilidade criará um ramo, ou seja, uma cópia temporária do tabuleiro. Dentro de cada ramo, o programa aplicará apenas \textit{Naked Singles} e \textit{Hidden Singles}. Se todos os ramos viáveis chegarem ao mesmo valor para uma célula alvo, esse valor será aceito no tabuleiro original. Em linguagem lógica, se $D(G_p)(t)=a$ em todos os ramos viáveis $p$, então a célula alvo $t$ receberá $a$:
 
 \[
 \forall p\in P_v^{\mathrm{viaveis}},\quad D(G_p)(t)=a
 \quad\Longrightarrow\quad t=a.
 \]
 
-Aqui, $P_v^{\mathrm{viaveis}}$ representa as posições que ainda são possíveis para o valor $v$. A expressão $D(G_p)$ representa a grade depois das deduções diretas feitas no ramo $p$. A expressão ``primeira camada'' quer dizer que o programa não cria uma nova hipótese dentro do ramo: ele apenas acompanha as consequências da hipótese inicial.
+Aqui, $P_v^{\mathrm{viaveis}}$ representará as posições que ainda forem possíveis para o valor $v$. A expressão $D(G_p)$ representará a grade depois das deduções diretas feitas no ramo $p$. A expressão ``primeira camada'' indicará que o programa não criará uma nova hipótese dentro do ramo: ele apenas acompanhará as consequências da hipótese inicial.
 
-\section{Como o Z3 verifica as grades}
+\section{Como o Z3 verificará as grades}
 
-Além de calcular candidatos, o programa usa o Z3, um solucionador de restrições lógicas. Para o Z3, cada célula é uma variável inteira entre 1 e $n$. Ele recebe três regras: os valores de uma linha não podem se repetir, os valores de uma coluna não podem se repetir e os valores de um bloco não podem se repetir. As pistas já existentes também ficam fixadas aos seus valores.
+Além de calcular candidatos, o programa usará o Z3, um solucionador de restrições lógicas. Para o Z3, cada célula será uma variável inteira entre 1 e $n$. Ele receberá três regras: os valores de uma linha não poderão se repetir, os valores de uma coluna não poderão se repetir e os valores de um bloco não poderão se repetir. As pistas existentes também ficarão fixadas aos seus valores.
 
-A formalização a seguir apenas escreve essas mesmas regras em símbolos. Ela acompanha diretamente o que o código entrega ao Z3: primeiro as regras da grade, depois as pistas e, por fim, a busca pelas soluções possíveis.
+A formalização a seguir escreverá essas mesmas regras em símbolos. Ela acompanhará diretamente o que o código entregará ao Z3: primeiro as regras da grade, depois as pistas e, por fim, a busca pelas soluções possíveis.
 
-\subsection{Modelo lógico usado pelo Z3}
+\subsection{Modelo lógico que será usado pelo Z3}
 
-Para tornar essa etapa precisa, seja $x_{ij}$ a variável criada para a célula da linha $i$ e da coluna $j$. O código cria uma variável para cada célula, inclusive para as pistas. Em uma grade de ordem $n$, as restrições de domínio são:
+Para tornar essa etapa precisa, seja $x_{ij}$ a variável que será criada para a célula da linha $i$ e da coluna $j$. O código criará uma variável para cada célula, inclusive para as pistas. Em uma grade de ordem $n$, as restrições de domínio serão:
 
 \[
 1 \leq x_{ij} \leq n,
 \qquad 0 \leq i,j < n.
 \]
 
-Em seguida, o Z3 recebe uma restrição de valores distintos para cada linha, cada coluna e cada bloco. Se $q=\sqrt{n}$ é o tamanho do lado de um bloco, essa parte do modelo pode ser escrita como:
+Em seguida, o Z3 receberá uma restrição de valores distintos para cada linha, cada coluna e cada bloco. Se $q=\sqrt{n}$ for o tamanho do lado de um bloco, essa parte do modelo poderá ser escrita como:
 
 \[
 \begin{aligned}
@@ -64,41 +66,41 @@ Em seguida, o Z3 recebe uma restrição de valores distintos para cada linha, ca
 \end{aligned}
 \]
 
-A última linha representa os blocos: $r$ e $s$ indicam em qual bloco a célula está, enquanto $a$ e $b$ indicam sua posição dentro dele. Por exemplo, em um Sudoku 9 $\times$ 9, $q=3$; cada bloco tem três linhas e três colunas. O termo \textit{Distinct} significa apenas que os valores listados devem ser diferentes entre si.
+A última linha representará os blocos: $r$ e $s$ indicarão em qual bloco a célula estará, enquanto $a$ e $b$ indicarão sua posição dentro dele. Por exemplo, em um Sudoku 9 $\times$ 9, $q=3$; cada bloco terá três linhas e três colunas. O termo \textit{Distinct} indicará que os valores listados deverão ser diferentes entre si.
 
-Se a entrada do tabuleiro possui uma pista $g_{ij}$ diferente de zero, o código fixa a variável correspondente:
+Se a entrada do tabuleiro possuir uma pista $g_{ij}$ diferente de zero, o código fixará a variável correspondente:
 
 \[
 g_{ij}\neq 0 \quad \Longrightarrow \quad x_{ij}=g_{ij}.
 \]
 
-O conjunto formado por todas essas restrições será chamado de $\Phi_G$. Uma solução do Sudoku é qualquer preenchimento que respeita $\Phi_G$. Para uma posição, o programa reúne os valores que aparecem nessa posição ao percorrer todas as soluções encontradas. Se aparece apenas um valor, a posição é globalmente forçada; se aparecem dois ou mais valores, a posição continua admitindo mais de uma possibilidade. Essa noção é usada pelo código ao preencher os campos de validação da resposta da LLM. A escrita formal desse conjunto está no Apêndice A.
+O conjunto formado por todas essas restrições será chamado de $\Phi_G$. Uma solução do Sudoku será qualquer preenchimento que respeite $\Phi_G$. Para uma posição, o programa reunirá os valores que aparecerem nessa posição ao percorrer todas as soluções encontradas. Se aparecer apenas um valor, a posição será globalmente forçada; se aparecerem dois ou mais valores, a posição continuará admitindo mais de uma possibilidade. Essa noção será usada pelo código ao preencher os campos de validação da resposta da LLM. A escrita formal desse conjunto estará no Apêndice A.
 
-O Z3 procura um preenchimento completo que respeite todas essas regras. Quando encontra uma solução, o programa adiciona uma nova regra que obriga a próxima solução a ser diferente dela em pelo menos uma célula. Repetindo esse procedimento, o programa descobre se a grade não tem solução, tem uma única solução ou admite mais de uma solução.
+O Z3 procurará um preenchimento completo que respeite todas essas regras. Quando encontrar uma solução, o programa adicionará uma nova regra que obrigará a próxima solução a ser diferente dela em pelo menos uma célula. Repetindo esse procedimento, o programa identificará se a grade será insatisfatível, terá uma solução única ou admitirá mais de uma solução.
 
-Mais exatamente, se $M_k$ é a $k$-ésima solução encontrada, o código adiciona a restrição de bloqueio:
+Mais exatamente, se $M_k$ for a $k$-ésima solução obtida, o código adicionará a restrição de bloqueio:
 
 \[
 \beta_k=\bigvee_{0\leq i,j<n}\bigl(x_{ij}\neq M_k(x_{ij})\bigr).
 \]
 
-Essa expressão obriga a próxima solução a discordar de $M_k$ em pelo menos uma célula. Depois de encontrar $k$ soluções, o Z3 procura uma nova solução para $\Phi_G\land\beta_1\land\cdots\land\beta_k$. O símbolo $\land$ significa ``e'': o Z3 precisa respeitar as regras do Sudoku e todas as restrições de bloqueio já criadas. Quando essa busca se torna insatisfatível, todas as soluções da grade foram enumeradas.
+Essa expressão obrigará a próxima solução a discordar de $M_k$ em pelo menos uma célula. Depois de encontrar $k$ soluções, o Z3 procurará uma nova solução para $\Phi_G\land\beta_1\land\cdots\land\beta_k$. O símbolo $\land$ indicará a conjunção entre as restrições: o Z3 precisará respeitar as regras do Sudoku e todas as restrições de bloqueio que tiverem sido criadas. Quando essa busca se tornar insatisfatível, todas as soluções da grade terão sido enumeradas.
 
-Essa etapa não substitui a classificação das técnicas. O detector de técnicas responde à pergunta ``qual jogada pode ser obtida agora, olhando para a grade?''. O Z3 responde a outra pergunta: ``quais valores ainda aparecem em soluções completas compatíveis com esta grade?''. Essa diferença será importante quando a resposta da LLM for avaliada.
+Essa etapa não substituirá a classificação das técnicas. O detector de técnicas responderá à pergunta ``qual jogada poderá ser obtida ao se observar a grade?''. O Z3 responderá a outra pergunta: ``quais valores aparecerão em soluções completas compatíveis com esta grade?''. Essa diferença será importante quando a resposta da LLM for avaliada.
 
 \section{Construção do conjunto de dados}
 
-O conjunto de dados é formado a partir de grades completas obtidas com o Z3. O programa escolhe uma grade resolvida, embaralha suas posições e remove pistas uma a uma. A solução de origem continua compatível com o tabuleiro reduzido, pois remover uma pista não altera os valores que já formavam uma solução. Depois de cada remoção, o programa recalcula os candidatos e verifica se a técnica desejada apareceu.
+O conjunto de dados será formado a partir de grades completas a serem obtidas com o Z3. O programa escolherá uma grade que terá sido resolvida, embaralhará suas posições e removerá pistas uma a uma. A solução de origem continuará compatível com o tabuleiro reduzido, pois a remoção de uma pista não alterará os valores que compõem a solução. Depois de cada remoção, o programa recalculará os candidatos e verificará se a técnica desejada terá aparecido.
 
-As categorias são separadas para que cada instância cobre a técnica esperada. Uma instância de \textit{Hidden Single} só é guardada quando não há \textit{Naked Single} disponível. Uma instância de consenso só é guardada quando não há nenhuma das duas deduções diretas. Para \textit{Naked Single}, o programa espera que pelo menos 25\% das células tenham sido removidas e também descarta grades que já tenham \textit{Hidden Single} disponível.
+As categorias serão separadas para que cada instância cubra a técnica esperada. Uma instância de \textit{Hidden Single} só será guardada quando não houver \textit{Naked Single} disponível. Uma instância de consenso só será guardada quando não houver nenhuma das duas deduções diretas. Para \textit{Naked Single}, o programa esperará que pelo menos 25\% das células tenham sido removidas e também descartará grades que já tenham \textit{Hidden Single} disponível.
 
-O processo não exige solução única para guardar uma instância. Isso é intencional: o programa registra se a jogada sugerida pela LLM é o único valor possível ou apenas um valor compatível com pelo menos uma solução. O banco de dados atual contém 816 instâncias, sendo 420 de grades 4 $\times$ 4 e 396 de grades 9 $\times$ 9. Para cada uma, o banco guarda a grade, a técnica identificada e uma imagem do tabuleiro. Para as inferências, guarda a explicação escrita pela LLM e os resultados da validação.
+O processo não exigirá solução única para guardar uma instância. Isso será intencional: o programa registrará se a jogada sugerida pela LLM será o único valor possível ou se será compatível com pelo menos uma solução. Para cada instância, o banco de dados guardará a grade, a técnica identificada e uma imagem do tabuleiro. Para cada inferência, guardará a explicação escrita pela LLM e os resultados da validação.
 
 \section{Envio para a LLM e avaliação das respostas}
 
-Cada instância é enviada à LLM como texto. O comando informa a grade, explica que zero significa célula vazia, indica a técnica que deve ser usada e pede uma única jogada. Quando houver mais de uma jogada possível, o comando pede a célula com menor índice de linha e, em caso de empate, a de menor índice de coluna. Essa regra torna a escolha reprodutível.
+Cada instância será enviada à LLM como texto. O comando informará a grade, explicará que zero representará célula vazia, indicará a técnica que deverá ser usada e pedirá uma única jogada. Quando houver mais de uma jogada possível, o comando pedirá a célula com menor índice de linha e, em caso de empate, a de menor índice de coluna. Essa regra tornará a escolha reprodutível.
 
-A resposta deve ser enviada em JSON, um formato de texto organizado por campos. No caso de sucesso, ela informa o valor, a posição, a técnica usada e a explicação. A etiqueta longa em letras maiúsculas é apenas o nome interno que o programa usa para identificar a técnica. A estrutura esperada é a seguinte:
+A resposta deverá ser enviada em JSON, um formato de texto organizado por campos. No caso de sucesso, ela informará o valor, a posição, a técnica usada e a explicação. A etiqueta longa em letras maiúsculas será apenas o nome interno que o programa usará para identificar a técnica. A estrutura esperada será a seguinte:
 
 \begin{quote}
 \small\ttfamily
@@ -110,10 +112,10 @@ A resposta deve ser enviada em JSON, um formato de texto organizado por campos. 
 \}
 \end{quote}
 
-Primeiro, o programa verifica se a posição e o valor pertencem ao conjunto de jogadas da técnica pedida. Esse resultado é armazenado em \texttt{succeeded}. Em seguida, verifica se o valor proposto aparece em pelo menos uma solução completa enumerada pelo Z3; esse resultado é armazenado em \texttt{succeeded\_nth\_layer}. Por último, verifica se o valor é único naquela posição entre as soluções encontradas; esse resultado é armazenado em \texttt{succeeded\_and\_unique\_nth\_layer}.
+Primeiro, o programa verificará se a posição e o valor pertencerão ao conjunto de jogadas da técnica pedida. Esse resultado será armazenado em \texttt{succeeded}. Em seguida, verificará se o valor proposto aparecerá em pelo menos uma solução completa enumerada pelo Z3; esse resultado será armazenado em \texttt{succeeded\_nth\_layer}. Por último, verificará se o valor será único naquela posição entre as soluções encontradas; esse resultado será armazenado em \texttt{succeeded\_and\_unique\_nth\_layer}.
 
-Esses três campos permitem distinguir situações diferentes. Uma resposta pode seguir exatamente a técnica solicitada. Pode também propor um valor compatível com alguma solução, mas chegar a ele por outra técnica. Por fim, pode apresentar um valor que não aparece em nenhuma solução compatível com a grade. A explicação devolvida pela LLM é preservada no campo \texttt{explanation}.
+Esses três campos permitirão distinguir situações diferentes. Uma resposta poderá seguir exatamente a técnica solicitada. Poderá também propor um valor compatível com alguma solução, mas chegar a ele por outra técnica. Por fim, poderá apresentar um valor que não aparecerá em nenhuma solução compatível com a grade. A explicação devolvida pela LLM será preservada no campo \texttt{explanation}.
 
-Depois da conferência automática, a explicação é lida pelo pesquisador com uma rubrica simples. Em \textit{Naked Single}, verifica-se se ela identifica a célula e mostra por que os demais valores foram eliminados. Em \textit{Hidden Single}, verifica-se se ela aponta a linha, coluna ou bloco analisado e mostra por que o valor só cabe em uma posição. Em consenso, verifica-se se ela apresenta as hipóteses, relata as deduções de cada ramo e explica a conclusão comum. Para cada item, o pesquisador registra se a evidência está presente, incompleta ou ausente. A mesma rubrica será aplicada a todas as respostas, para que os critérios permaneçam consistentes.
+Depois da conferência automática, o pesquisador lerá a explicação com uma rubrica simples. Em \textit{Naked Single}, verificará se ela identificará a célula e mostrará por que os demais valores terão sido eliminados. Em \textit{Hidden Single}, verificará se ela apontará a linha, coluna ou bloco analisado e mostrará por que o valor só caberá em uma posição. Em consenso, verificará se ela apresentará as hipóteses, relatará as deduções de cada ramo e explicará a conclusão comum. Para cada item, o pesquisador registrará a presença, a incompletude ou a ausência da evidência. A mesma rubrica será aplicada a todas as respostas, para que os critérios permaneçam consistentes.
 
-A base piloto guarda uma inferência por instância, mas não registra qual modelo foi usado, quais parâmetros foram adotados nem o JSON completo retornado pela LLM. Ela permite analisar as explicações preservadas e os resultados da validação, mas não será usada sozinha para comparar modelos. Na etapa comparativa, as mesmas instâncias serão submetidas aos modelos selecionados com comandos padronizados. Cada execução deverá registrar o nome e a versão do modelo, a configuração usada, a data da chamada e a resposta original. Com esses registros, será possível comparar as taxas de acerto e a qualidade das justificativas entre modelos e entre as três técnicas.
+Na etapa piloto, será realizada uma inferência por instância. Cada execução registrará o modelo, sua versão, os parâmetros adotados, a data da chamada, o JSON completo retornado pela LLM, a explicação e os resultados da validação. Na etapa comparativa, as mesmas instâncias serão submetidas aos modelos selecionados com comandos padronizados. Com esses registros, será possível comparar as taxas de acerto e a qualidade das justificativas entre modelos e entre as três técnicas.
