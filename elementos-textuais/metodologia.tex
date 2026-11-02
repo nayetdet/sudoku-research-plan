@@ -1,6 +1,6 @@
 \secaoprimariasemquebra{Metodologia}
 
-Esta pesquisa seguirá uma sequência simples. Primeiro, o programa criará tabuleiros e identificará a técnica presente em cada um. Depois, uma LLM receberá esses tabuleiros e proporá uma jogada. Por fim, o programa conferirá a jogada e a explicação. O código do experimento será disponibilizado em repositório público\footnote{\url{https://github.com/nayetdet/sudoku-llm-reasoning}.}. Uma base piloto será usada para testar o processo e orientar a etapa comparativa da pesquisa.
+Esta pesquisa seguirá uma sequência simples. Primeiro, o programa criará tabuleiros e identificará a técnica presente em cada um. Depois, uma LLM receberá esses tabuleiros e proporá uma jogada. Por fim, o programa conferirá a jogada e a explicação. O código do experimento será disponibilizado em repositório público. Uma base piloto será usada para testar o processo e orientar a etapa comparativa da pesquisa.
 
 O experimento usará Sudokus 4 $\times$ 4 e 9 $\times$ 9. Dentro do programa, uma célula vazia será representada por zero. Os demais números serão as pistas do tabuleiro. Por exemplo, a posição que o leitor vê como L1C4 aparecerá no programa como $[0,3]$: o programa começará a contar linhas e colunas a partir de zero, enquanto o texto começará em 1.
 
@@ -100,7 +100,7 @@ O processo não exigirá solução única para guardar uma instância. Isso ser�
 
 Cada instância será enviada à LLM como texto. O comando informará a grade, explicará que zero representará célula vazia, indicará a técnica que deverá ser usada e pedirá uma única jogada. Quando houver mais de uma jogada possível, o comando pedirá a célula com menor índice de linha e, em caso de empate, a de menor índice de coluna. Essa regra tornará a escolha reprodutível.
 
-A resposta deverá ser enviada em JSON, um formato de texto organizado por campos. No caso de sucesso, ela informará o valor, a posição, a técnica usada e a explicação. A etiqueta longa em letras maiúsculas será apenas o nome interno que o programa usará para identificar a técnica. A estrutura esperada será a seguinte:
+A resposta deverá ser apresentada em JSON, um formato de texto organizado por campos, com o valor proposto, a posição da célula, a técnica usada e a explicação da jogada. O exemplo a seguir ilustra esse formato para uma jogada de \textit{Naked Single}:
 
 \begin{quote}
 \small\ttfamily
@@ -112,9 +112,9 @@ A resposta deverá ser enviada em JSON, um formato de texto organizado por campo
 \}
 \end{quote}
 
-Primeiro, o programa verificará se a posição e o valor pertencerão ao conjunto de jogadas da técnica pedida. Esse resultado será armazenado em \texttt{succeeded}. Em seguida, verificará se o valor proposto aparecerá em pelo menos uma solução completa enumerada pelo Z3; esse resultado será armazenado em \texttt{succeeded\_nth\_layer}. Por último, verificará se o valor será único naquela posição entre as soluções encontradas; esse resultado será armazenado em \texttt{succeeded\_and\_unique\_nth\_layer}.
+A avaliação automática considerará três critérios. O primeiro será a adequação à técnica solicitada: o programa verificará se a posição e o valor propostos corresponderão a uma das jogadas identificadas pelo detector dessa técnica. O segundo será a compatibilidade com as soluções da grade: o Z3 verificará se haverá pelo menos uma solução completa em que a célula indicada contenha o valor proposto. O terceiro será a obrigatoriedade desse valor na posição escolhida: será verificado se todas as soluções completas apresentarão o mesmo valor nessa célula.
 
-Esses três campos permitirão distinguir situações diferentes. Uma resposta poderá seguir exatamente a técnica solicitada. Poderá também propor um valor compatível com alguma solução, mas chegar a ele por outra técnica. Por fim, poderá apresentar um valor que não aparecerá em nenhuma solução compatível com a grade. A explicação devolvida pela LLM será preservada no campo \texttt{explanation}.
+Esses critérios permitirão distinguir uma jogada que respeite a técnica pedida de uma proposta que seja apenas compatível com alguma solução da grade. Também permitirão identificar se o valor será obrigatório naquela célula ou se outras soluções admitirão valores diferentes para a mesma posição. Caso o valor proposto não apareça em nenhuma solução, a jogada será considerada incompatível com a grade. A explicação da LLM será preservada para a análise do raciocínio apresentado.
 
 Depois da conferência automática, o pesquisador lerá a explicação com uma rubrica simples. Em \textit{Naked Single}, verificará se ela identificará a célula e mostrará por que os demais valores terão sido eliminados. Em \textit{Hidden Single}, verificará se ela apontará a linha, coluna ou bloco analisado e mostrará por que o valor só caberá em uma posição. Em consenso, verificará se ela apresentará as hipóteses, relatará as deduções de cada ramo e explicará a conclusão comum. Para cada item, o pesquisador registrará a presença, a incompletude ou a ausência da evidência. A mesma rubrica será aplicada a todas as respostas, para que os critérios permaneçam consistentes.
 
