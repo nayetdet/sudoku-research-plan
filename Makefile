@@ -23,6 +23,8 @@
 
 filename=documento
 
+.PHONY: all compile slides clean
+
 all: compile
 	
 compile:
@@ -38,7 +40,10 @@ compile:
 	pdflatex $(filename).tex
 	@echo "Processo finalizado com sucesso!"
 
-	
+
+slides:
+	latexmk -pdf -outdir=slide -interaction=nonstopmode -halt-on-error slide/apresentacao.tex
+
 clean:
 	@echo -n "Limpando arquivos auxiliares...\n"
 	@rm -f *.out *.aux *.alg *.acr *.dvi *.gls *.log *.bbl *.blg *.ntn *.not *.lof *.loq *.lot *.toc *.loa *.lsg *.nlo *.nls *.ilg *.ind *.ist *.glg *.glo *.xdy *.acn *.idx *.loq

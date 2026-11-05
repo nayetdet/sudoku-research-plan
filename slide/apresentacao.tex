@@ -1,0 +1,173 @@
+% Texto integral do artigo, carregado diretamente dos arquivos originais.
+% Padrão visual: MTC Modelo de Apresentação oral do projet de pesquisa.pdf.
+% Compilação: make slides (pdfLaTeX + BibTeX, via latexmk).
+\documentclass[aspectratio=169,10pt,t]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{helvet,courier,mathptmx}
+\usepackage{graphicx,array,ragged2e,colortbl}
+\usepackage[alf,abnt-emphasize=bf,bibjustif,recuo=0cm,
+  abnt-etal-cite=3,abnt-etal-list=0,abnt-etal-text=it]{abntex2cite}
+
+% Uma única coluna, sem barras, rodapés, numeração de slides ou ornamentos.
+% As medidas reproduzem proporcionalmente a fonte Arial 20 pt e as margens
+% do modelo de 960 x 540 pt no tamanho nativo 16:9 do Beamer.
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamersize{text margin left=1.05cm,text margin right=1.05cm}
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=black}
+\setbeamercolor{bibliography entry author}{fg=black}
+\setbeamercolor{bibliography entry title}{fg=black}
+\setbeamercolor{bibliography entry location}{fg=black}
+\setbeamercolor{bibliography entry note}{fg=black}
+\setbeamerfont{normal text}{size*={9.5}{11.35}}
+\setbeamerfont{itemize/enumerate body}{size*={9.5}{11.35}}
+\setbeamerfont{caption}{size*={8}{9.6}}
+\setbeamerfont{caption name}{size*={8}{9.6}}
+\setbeamerfont{quote}{shape=\upshape}
+\setbeamerfont{bibliography entry author}{size*={9.5}{11.35}}
+\setbeamerfont{bibliography entry title}{size*={9.5}{11.35}}
+\setbeamerfont{bibliography entry location}{size*={9.5}{11.35}}
+\setbeamerfont{bibliography entry note}{size*={9.5}{11.35}}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{\vspace{0.6cm}}
+\setbeamertemplate{footline}{\vspace{0.45cm}}
+\setbeamertemplate{frametitle}{}
+\setbeamertemplate{frametitle continuation}{}
+\setbeamertemplate{bibliography item}{}
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{itemize item}{\raisebox{0.15ex}{\scriptsize\textbullet}}
+\urlstyle{same}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue,
+  pdfsubject={Texto integral do projeto de pesquisa — IFCE Campus Maracanaú}}
+\title{Raciocínio Lógico em LLMs: Avaliação de Processos Dedutivos na Resolução de Sudoku}
+\author{João Pedro Moreira Campos de Lima; Isaac da Cunha Cavalcanti Duarte; Juliano Magalhães Jurity}
+\date{2026}
+
+% Adaptação apenas dos comandos de apresentação do artigo. O conteúdo dos
+% capítulos não é copiado, reescrito, resumido ou convertido em novos tópicos.
+\newcounter{capituloartigo}
+\newcounter{secaoartigo}[capituloartigo]
+\newcounter{subsecaoartigo}[secaoartigo]
+\newcommand{\tituloartigo}[1]{%
+  \par\refstepcounter{capituloartigo}%
+  \noindent\textbf{\arabic{capituloartigo}\space\MakeUppercase{#1}}\par
+  \nobreak\vspace{6pt}\nobreak}
+\newcommand{\chapter}[1]{\tituloartigo{#1}}
+\newcommand{\secaoprimariasemquebra}[1]{\tituloartigo{#1}}
+\newcommand{\apendice}[1]{%
+  \par\noindent\textbf{APÊNDICE A — \MakeUppercase{#1}}\par
+  \nobreak\vspace{6pt}\nobreak}
+\newenvironment{alineascomponto}{%
+  \begin{itemize}\setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}}{\end{itemize}}
+\newcommand{\Caption}[1]{\caption{#1}}
+\newcommand{\Fonte}[1]{\par{\fontsize{8}{9.6}\selectfont Fonte: #1\par}}
+\let\imagemoriginal\includegraphics
+
+\newenvironment{conteudointegral}{%
+  \usebeamerfont{normal text}\justifying
+  \setlength{\parindent}{0pt}\setlength{\parskip}{2pt}%
+  % Evita separar as linhas de um parágrafo entre slides.
+  \interlinepenalty=10000\widowpenalty=10000\clubpenalty=10000
+  \renewcommand{\section}[1]{%
+    \par\addvspace{6pt}\refstepcounter{secaoartigo}%
+    \noindent\textbf{\arabic{capituloartigo}.\arabic{secaoartigo}\space ##1}\par\nobreak}%
+  \renewcommand{\subsection}[1]{%
+    \par\addvspace{6pt}\refstepcounter{subsecaoartigo}%
+    \noindent\textbf{\arabic{capituloartigo}.\arabic{secaoartigo}.\arabic{subsecaoartigo}\space ##1}\par\nobreak}%
+  % Conserva todas as figuras; limita apenas sua altura para caber no slide.
+  \renewcommand{\includegraphics}[2][]{%
+    \imagemoriginal[##1,height=0.64\textheight,keepaspectratio]{##2}}%
+}{\par}
+
+\newsavebox{\tabelacronograma}
+\let\tabularoriginal\tabular
+\let\fimtabularoriginal\endtabular
+\let\pilhaoriginal\shortstack
+\newcommand{\ajustartabela}{%
+  \renewcommand{\shortstack}[1]{\cellcolor{yellow}\pilhaoriginal{##1}}%
+  \renewenvironment{tabular}[1]{%
+    \begin{lrbox}{\tabelacronograma}\tabularoriginal{##1}%
+  }{%
+    \fimtabularoriginal\end{lrbox}%
+    \resizebox{0.93\linewidth}{!}{\usebox{\tabelacronograma}}%
+  }}
+
+\begin{document}
+
+% Capa: logotipo, instituição, título serifado, autores e orientadora,
+% centralizados, na mesma ordem do modelo. Sem informações adicionais.
+\begin{frame}[plain]
+  \centering
+  \vspace{0.35cm}
+  \imagemoriginal[height=1.75cm]{figuras/logo-ifce.png}\par
+  \vspace{0.05cm}
+  {\fontsize{9.5}{11.35}\selectfont IFCE Campus Maracanaú\\Ciência da Computação\par}
+  \vspace{0.14cm}
+  {\fontfamily{ptm}\selectfont\fontsize{15.1}{16.2}\selectfont
+    RACIOCÍNIO LÓGICO EM LLMs:\\
+    AVALIAÇÃO DE PROCESSOS DEDUTIVOS\\
+    NA RESOLUÇÃO DE SUDOKU\par}
+  \vspace{0.28cm}
+  {\fontsize{9.5}{11.35}\selectfont
+    João Pedro Moreira Campos de Lima\\
+    Isaac da Cunha Cavalcanti Duarte\\
+    Juliano Magalhães Jurity\par}
+  \vspace{0.15cm}
+  {\fontsize{9.5}{11.35}\selectfont
+    Orientadora: Profa. Ma. Aurenívia Ferreira da Silva\par}
+\end{frame}
+
+% Cada bloco pode continuar em novas páginas. A ordem e todo o conteúdo
+% são os dos mesmos arquivos incluídos por documento.tex.
+\begin{frame}[allowframebreaks=1]
+  \begin{conteudointegral}
+    \input{elementos-textuais/introducao}
+  \end{conteudointegral}
+\end{frame}
+
+\begin{frame}[allowframebreaks=1]
+  \begin{conteudointegral}
+    \input{elementos-textuais/objetivos}
+  \end{conteudointegral}
+\end{frame}
+
+\begin{frame}[allowframebreaks=1]
+  \begin{conteudointegral}
+    \input{elementos-textuais/referencial-teorico}
+  \end{conteudointegral}
+\end{frame}
+
+\begin{frame}[allowframebreaks=1]
+  \begin{conteudointegral}
+    \input{elementos-textuais/metodologia}
+  \end{conteudointegral}
+\end{frame}
+
+\begin{frame}
+  \begin{conteudointegral}
+    % Mantém a tabela original inteira, ajustando sua largura à página.
+    \ajustartabela
+    \input{elementos-textuais/cronograma}
+  \end{conteudointegral}
+\end{frame}
+
+\nocite{dagostino2024,sudokuSage2026,herr2025,maiya2025,mondorf2024}
+\begin{frame}[allowframebreaks=1]
+  \begin{conteudointegral}
+    \textbf{REFERÊNCIAS}\par\vspace{11.35pt}
+    \bibliography{elementos-pos-textuais/referencias}
+  \end{conteudointegral}
+\end{frame}
+
+% O apêndice também integra o artigo e é preservado integralmente.
+\begin{frame}[allowframebreaks=1]
+  \begin{conteudointegral}
+    \input{elementos-pos-textuais/apendice-a}
+  \end{conteudointegral}
+\end{frame}
+
+\end{document}
