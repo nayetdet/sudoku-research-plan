@@ -1,0 +1,31 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Compile document
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: documento.tex
+          args: -pdf -interaction=nonstopmode -halt-on-error
+
+      - name: Publish nightly release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: nightly
+          name: Nightly build
+          prerelease: true
+          make_latest: false
+          files: documento.pdf

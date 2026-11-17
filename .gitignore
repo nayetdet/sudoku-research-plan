@@ -17,6 +17,7 @@
 *.vrb
 *.tmp
 /documento.pdf
+/slide/apresentacao.pdf
 
 *.acn
 *.acr
