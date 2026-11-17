@@ -102,15 +102,9 @@ Cada instância será enviada à LLM como texto. O comando informará a grade, e
 
 A resposta deverá ser apresentada em JSON, um formato de texto organizado por campos, com o valor proposto, a posição da célula, a técnica usada e a explicação da jogada. O exemplo a seguir ilustra esse formato para uma jogada de \textit{Naked Single}:
 
-\begin{lstlisting}[basicstyle=\small\ttfamily,breaklines=true,
-  literate={é}{{\'e}}1 {ú}{{\'u}}1 {ç}{{\c{c}}}1]
-{
-  "value": 3,
-  "position": [0, 3],
-  "candidate_type": "ZEROTH_LAYER_NAKED_SINGLES",
-  "explanation": "O valor 3 é o único candidato da célula."
-}
-\end{lstlisting}
+\begin{center}
+\includegraphics[width=0.95\textwidth]{figuras/exemplo-resposta-llm}
+\end{center}
 
 A avaliação automática considerará três critérios. O primeiro será a adequação à técnica solicitada: o programa verificará se a posição e o valor propostos corresponderão a uma das jogadas identificadas pelo detector dessa técnica. O segundo será a compatibilidade com as soluções da grade: o Z3 verificará se haverá pelo menos uma solução completa em que a célula indicada contenha o valor proposto. O terceiro será a obrigatoriedade desse valor na posição escolhida: será verificado se todas as soluções completas apresentarão o mesmo valor nessa célula.
 
